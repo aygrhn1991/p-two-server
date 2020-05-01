@@ -1,11 +1,10 @@
 package com.cyf.ptwoserver.wx.util;
 
-import com.cyf.ptwoserver.util.UtilDate;
 import com.cyf.ptwoserver.wx.mapper.component_access_token_mapper;
 import com.cyf.ptwoserver.wx.mapper.component_verify_ticket_mapper;
 import com.cyf.ptwoserver.wx.models.WxConfig;
 import com.cyf.ptwoserver.wx.models.main.component_access_token;
-import com.google.gson.Gson;
+import com.cyf.ptwoserver.wx.models.main.pre_auth_code;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,5 +52,25 @@ public class UtilMain {
         }
     }
 
+    public String get_pre_auth_code() {
+        Map map = new HashMap<>();
+        map.put("component_appid", wxConfig.appId);
+        RestTemplate restTemplate = new RestTemplate();
+        pre_auth_code pac = restTemplate.postForObject("https://api.weixin.qq.com/cgi-bin/component/api_create_preauthcode?component_access_token=" + this.get_component_access_token(), map, pre_auth_code.class);
+        if (pac.errcode != null) {
+            logger.info(String.format("pre_auth_code请求结果（失败）：%s", pac.errmsg));
+        } else {
+            logger.info(String.format("pre_auth_code请求结果（成功）：%s", pac.pre_auth_code));
+        }
+        return pac.pre_auth_code;
+    }
+
+    public String get_auth_code_url_pc(String redirect_uri) {
+        return String.format("https://mp.weixin.qq.com/cgi-bin/componentloginpage?auth_type=3&component_appid=%s&pre_auth_code=%s&redirect_uri=%s", wxConfig.appId, this.get_pre_auth_code(), redirect_uri);
+    }
+
+    public String get_auth_code_url_mobile(String redirect_uri) {
+        return String.format("https://mp.weixin.qq.com/safe/bindcomponent?action=bindcomponent&auth_type=3&no_scan=1&component_appid=%s&pre_auth_code=%s&redirect_uri=%s#wechat_redirect", wxConfig.appId, this.get_pre_auth_code(), redirect_uri);
+    }
 
 }

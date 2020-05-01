@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <title>index</title>
+    <script src="/js/jquery.js"></script>
+    <script src="/js/qrcode.js"></script>
+</head>
+<body>
+<div id="qrcode"></div>
+<a id="url1" target="_blank">电脑页面点击</a>
+<a id="url2" target="_blank">手机微信点击</a>
+<script>
+    $.ajax({
+        type: 'post',
+        url: '/main/geturl',
+        contentType: 'application/json',//发送给服务器的格式
+        dataType: 'json',//收到服务器数据的格式
+        success: function (data) {
+            var qrcode = new QRCode(document.getElementById('qrcode'), {
+                text: data.pc,
+                width: 150,
+                height: 150,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            $('#url1').attr('href', data.pc);
+            $('#url2').attr('href', data.mobile);
+        }
+    });
+</script>
+</body>
+</html>

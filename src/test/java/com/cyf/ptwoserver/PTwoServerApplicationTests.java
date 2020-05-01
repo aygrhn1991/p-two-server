@@ -19,7 +19,7 @@ class PTwoServerApplicationTests {
     @Test
     void contextLoads() {
         try {
-            System.out.println(utilMain.get_component_access_token());
+            System.out.println(utilMain.get_pre_auth_code());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
