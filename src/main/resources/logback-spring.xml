@@ -2,7 +2,7 @@
 <configuration>
 
     <contextName>p-two-server</contextName>
-    <property name="log.path" value="D:/log"/>
+    <property name="log.path" value="D:/logs"/>
     <property name="log.filename" value="p-two-server"/>
     <property name="log.pattern"
               value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%5level] %30logger{30} : %msg%n"/>

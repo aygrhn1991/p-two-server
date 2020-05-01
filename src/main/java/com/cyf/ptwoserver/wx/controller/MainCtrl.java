@@ -63,15 +63,12 @@ public class MainCtrl {
             String createTime = root.elementText("CreateTime");
             String infoType = root.elementText("InfoType");
             String componentVerifyTicket = root.elementText("ComponentVerifyTicket");
-            component_verify_ticket cvt = new component_verify_ticket();
-            cvt.appId = appId;
-            cvt.createTime = UtilDate.dateToYYYYMMDDHHMMSS(new Date(Long.parseLong(createTime) * 1000));
-            cvt.infoType = infoType;
-            cvt.componentVerifyTicket = componentVerifyTicket;
+            component_verify_ticket cvt = new component_verify_ticket(appId, UtilDate.dateToYYYYMMDDHHMMSS(new Date(Long.parseLong(createTime) * 1000)), infoType, componentVerifyTicket);
+            cvt.systime = new Date();
             int count = this.component_verify_ticket_mapper.insert(cvt);
             logger.info(String.format("component_verify_ticket存储结果：%s", count));
         } catch (Exception e) {
-            logger.info(e.getMessage());
+            logger.error(e.getMessage());
         }
         return "success";
 //        String AppId = request.getParameter("AppId");

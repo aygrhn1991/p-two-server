@@ -19,8 +19,7 @@ class PTwoServerApplicationTests {
     @Test
     void contextLoads() {
         try {
-            String result = this.utilMain.get_component_access_token();
-            System.out.println(result);
+            System.out.println(utilMain.get_component_access_token());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
