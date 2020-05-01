@@ -5,6 +5,7 @@ import com.cyf.ptwoserver.wx.mapper.component_verify_ticket_mapper;
 import com.cyf.ptwoserver.wx.models.WxConfig;
 import com.cyf.ptwoserver.wx.models.main.component_access_token;
 import com.cyf.ptwoserver.wx.models.main.pre_auth_code;
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,16 +37,11 @@ public class UtilMain {
             map.put("component_appid", wxConfig.appId);
             map.put("component_appsecret", wxConfig.appSecret);
             map.put("component_verify_ticket", component_verify_ticket_mapper.select().componentVerifyTicket);
-            RestTemplate restTemplate = new RestTemplate();
-            component_access_token cat = restTemplate.postForObject("https://api.weixin.qq.com/cgi-bin/component/api_component_token", map, component_access_token.class);
-            if (cat.errcode != null) {
-                logger.info(String.format("component_access_token请求结果（失败）：%s", cat.errmsg));
-            } else {
-                logger.info(String.format("component_access_token请求结果（成功）：%s", cat.component_access_token));
-                cat.systime = new Date();
-                int count = this.component_access_token_mapper.insert(cat);
-                logger.info(String.format("component_access_token存储结果：%s", count));
-            }
+            component_access_token cat = new RestTemplate().postForObject("https://api.weixin.qq.com/cgi-bin/component/api_component_token", map, component_access_token.class);
+            logger.info(String.format("component_access_token请求结果：%s", new Gson().toJson(cat)));
+            cat.systime = new Date();
+            int count = this.component_access_token_mapper.insert(cat);
+            logger.info(String.format("component_access_token存储结果：%s", count));
             return cat.component_access_token;
         } else {
             return token.component_access_token;
@@ -55,13 +51,8 @@ public class UtilMain {
     public String get_pre_auth_code() {
         Map map = new HashMap<>();
         map.put("component_appid", wxConfig.appId);
-        RestTemplate restTemplate = new RestTemplate();
-        pre_auth_code pac = restTemplate.postForObject("https://api.weixin.qq.com/cgi-bin/component/api_create_preauthcode?component_access_token=" + this.get_component_access_token(), map, pre_auth_code.class);
-        if (pac.errcode != null) {
-            logger.info(String.format("pre_auth_code请求结果（失败）：%s", pac.errmsg));
-        } else {
-            logger.info(String.format("pre_auth_code请求结果（成功）：%s", pac.pre_auth_code));
-        }
+        pre_auth_code pac = new RestTemplate().postForObject(String.format("https://api.weixin.qq.com/cgi-bin/component/api_create_preauthcode?component_access_token=%s", this.get_component_access_token()), map, pre_auth_code.class);
+        logger.info(String.format("pre_auth_code请求结果：%s", new Gson().toJson(pac)));
         return pac.pre_auth_code;
     }
 
