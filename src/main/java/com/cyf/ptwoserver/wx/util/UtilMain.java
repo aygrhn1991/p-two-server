@@ -1,12 +1,10 @@
 package com.cyf.ptwoserver.wx.util;
 
+import com.cyf.ptwoserver.wx.mapper.authorization_info_mapper;
 import com.cyf.ptwoserver.wx.mapper.component_access_token_mapper;
 import com.cyf.ptwoserver.wx.mapper.component_verify_ticket_mapper;
 import com.cyf.ptwoserver.wx.models.WxConfig;
-import com.cyf.ptwoserver.wx.models.main.auth;
-import com.cyf.ptwoserver.wx.models.main.authorizer_info;
-import com.cyf.ptwoserver.wx.models.main.component_access_token;
-import com.cyf.ptwoserver.wx.models.main.pre_auth_code;
+import com.cyf.ptwoserver.wx.models.main.*;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +29,9 @@ public class UtilMain {
 
     @Autowired
     private component_access_token_mapper component_access_token_mapper;
+
+    @Autowired
+    private authorization_info_mapper authorization_info_mapper;
 
     public String get_component_access_token() {
         component_access_token token = this.component_access_token_mapper.select();
@@ -66,12 +67,32 @@ public class UtilMain {
         return String.format("https://mp.weixin.qq.com/safe/bindcomponent?action=bindcomponent&auth_type=3&no_scan=1&component_appid=%s&pre_auth_code=%s&redirect_uri=%s#wechat_redirect", wxConfig.appId, this.get_pre_auth_code(), redirect_uri);
     }
 
-    public authorizer_info get_authorizer_info(String authorizer_appid) {
+    public auth get_auth(String authorizer_appid) {
         Map map = new HashMap();
         map.put("component_appid", this.wxConfig.appId);
         map.put("authorizer_appid", authorizer_appid);
         auth auth = new RestTemplate().postForObject(String.format("https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token=%s", this.get_component_access_token()), map, auth.class);
         logger.info(String.format("authorizer_info请求结果：%s", new Gson().toJson(auth)));
-        return auth.authorizer_info;
+        auth.authorizer_info.authorizer_appid = auth.authorization_info.authorizer_appid;
+        return auth;
+    }
+
+    public String get_authorizer_access_token(String authorizer_appid) {
+        authorization_info ai = this.authorization_info_mapper.select(authorizer_appid);
+        if (new Date().getTime() - ai.systime.getTime() > (ai.expires_in * 1000) / 2) {
+            Map map = new HashMap<>();
+            map.put("component_appid", wxConfig.appId);
+            map.put("authorizer_appid", authorizer_appid);
+            map.put("authorizer_refresh_token", ai.authorizer_refresh_token);
+            authorization_info ai2 = new RestTemplate().postForObject(String.format("https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token=%s", this.get_component_access_token()), map, authorization_info.class);
+            logger.info(String.format("authorizer_access_token刷新结果：%s", new Gson().toJson(ai2)));
+            ai2.authorizer_appid = authorizer_appid;
+            ai2.systime = new Date();
+            int count = this.authorization_info_mapper.update(ai2);
+            logger.info(String.format("authorizer_access_token存储结果：%s", count));
+            return ai2.authorizer_access_token;
+        } else {
+            return ai.authorizer_access_token;
+        }
     }
 }

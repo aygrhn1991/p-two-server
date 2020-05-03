@@ -11,7 +11,7 @@ public interface authorizer_info_mapper {
             "values(#{authorizer_appid},#{nick_name},#{head_img},#{user_name},#{principal_name},#{alias},#{qrcode_url},#{systime})")
     int insert(authorizer_info info);
 
-    @Select("select * from wx_authorizer_info where authorizer_appid=#{appid}")
-    authorizer_info select(String appid);
+    @Select("select * from wx_authorizer_info where authorizer_appid=#{authorizer_appid}")
+    authorizer_info select(String authorizer_appid);
 
 }

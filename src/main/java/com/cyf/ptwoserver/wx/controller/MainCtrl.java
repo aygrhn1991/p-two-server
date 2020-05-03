@@ -8,7 +8,6 @@ import com.cyf.ptwoserver.wx.mapper.component_verify_ticket_mapper;
 import com.cyf.ptwoserver.wx.models.WxConfig;
 import com.cyf.ptwoserver.wx.models.main.auth;
 import com.cyf.ptwoserver.wx.models.main.authorization_info;
-import com.cyf.ptwoserver.wx.models.main.authorizer_info;
 import com.cyf.ptwoserver.wx.models.main.component_verify_ticket;
 import com.cyf.ptwoserver.wx.util.UtilMain;
 import com.google.gson.Gson;
@@ -93,18 +92,17 @@ public class MainCtrl {
         Map map = new HashMap<>();
         map.put("component_appid", wxConfig.appId);
         map.put("authorization_code", authorization_code);
-        auth ai = new RestTemplate().postForObject(String.format("https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token=%s", this.utilMain.get_component_access_token()), map, auth.class);
-        logger.info(String.format("authorization_info请求结果：%s", new Gson().toJson(ai)));
-        authorization_info info = this.authorization_info_mapper.select(ai.authorization_info.authorizer_appid);
+        auth auth = new RestTemplate().postForObject(String.format("https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token=%s", this.utilMain.get_component_access_token()), map, auth.class);
+        logger.info(String.format("authorization_info请求结果：%s", new Gson().toJson(auth)));
+        authorization_info info = this.authorization_info_mapper.select(auth.authorization_info.authorizer_appid);
         if (info != null) {
             return "该账号已授权";
         } else {
-            ai.authorization_info.systime = new Date();
-            int count = this.authorization_info_mapper.insert(ai.authorization_info);
+            auth.authorization_info.systime = new Date();
+            int count = this.authorization_info_mapper.insert(auth.authorization_info);
             logger.info(String.format("authorization_info存储结果：%s", count));
-            authorizer_info aii = this.utilMain.get_authorizer_info(ai.authorization_info.authorizer_appid);
-            aii.authorizer_appid = ai.authorization_info.authorizer_appid;
-            count = this.authorizer_info_mapper.insert(aii);
+            auth auth2 = this.utilMain.get_auth(auth.authorization_info.authorizer_appid);
+            count = this.authorizer_info_mapper.insert(auth2.authorizer_info);
             logger.info(String.format("authorizer_info存储结果：%s", count));
             return "授权成功";
         }
