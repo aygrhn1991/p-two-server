@@ -3,6 +3,8 @@ package com.cyf.ptwoserver.wx.util;
 import com.cyf.ptwoserver.wx.mapper.component_access_token_mapper;
 import com.cyf.ptwoserver.wx.mapper.component_verify_ticket_mapper;
 import com.cyf.ptwoserver.wx.models.WxConfig;
+import com.cyf.ptwoserver.wx.models.main.auth;
+import com.cyf.ptwoserver.wx.models.main.authorizer_info;
 import com.cyf.ptwoserver.wx.models.main.component_access_token;
 import com.cyf.ptwoserver.wx.models.main.pre_auth_code;
 import com.google.gson.Gson;
@@ -64,4 +66,12 @@ public class UtilMain {
         return String.format("https://mp.weixin.qq.com/safe/bindcomponent?action=bindcomponent&auth_type=3&no_scan=1&component_appid=%s&pre_auth_code=%s&redirect_uri=%s#wechat_redirect", wxConfig.appId, this.get_pre_auth_code(), redirect_uri);
     }
 
+    public authorizer_info get_authorizer_info(String authorizer_appid) {
+        Map map = new HashMap();
+        map.put("component_appid", this.wxConfig.appId);
+        map.put("authorizer_appid", authorizer_appid);
+        auth auth = new RestTemplate().postForObject(String.format("https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token=%s", this.get_component_access_token()), map, auth.class);
+        logger.info(String.format("authorizer_info请求结果：%s", new Gson().toJson(auth)));
+        return auth.authorizer_info;
+    }
 }

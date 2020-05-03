@@ -3,6 +3,7 @@ package com.cyf.ptwoserver.wx.models.main;
 import com.cyf.ptwoserver.wx.models.BaseModel;
 
 public class authorizer_info extends BaseModel {
+    public String authorizer_appid;
     public String nick_name;
     public String head_img;
     public Object service_type_info;
