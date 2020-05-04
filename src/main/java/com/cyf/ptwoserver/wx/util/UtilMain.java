@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -67,7 +68,7 @@ public class UtilMain {
         return String.format("https://mp.weixin.qq.com/safe/bindcomponent?action=bindcomponent&auth_type=3&no_scan=1&component_appid=%s&pre_auth_code=%s&redirect_uri=%s#wechat_redirect", wxConfig.appId, this.get_pre_auth_code(), redirect_uri);
     }
 
-    public auth get_auth(String authorizer_appid) {
+    public auth get_authorizer_info(String authorizer_appid) {
         Map map = new HashMap();
         map.put("component_appid", this.wxConfig.appId);
         map.put("authorizer_appid", authorizer_appid);
@@ -94,5 +95,15 @@ public class UtilMain {
         } else {
             return ai.authorizer_access_token;
         }
+    }
+
+    public List<auth_info> get_authorizer_list(int offset, int count) {
+        Map map = new HashMap();
+        map.put("component_appid", this.wxConfig.appId);
+        map.put("offset", offset);
+        map.put("count", count);
+        auth_info_list ail = new RestTemplate().postForObject(String.format("https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_list?component_access_token=%s", this.get_component_access_token()), map, auth_info_list.class);
+        logger.info(String.format("authorizer_list请求结果：%s", new Gson().toJson(ail)));
+        return ail.list;
     }
 }

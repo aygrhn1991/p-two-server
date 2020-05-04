@@ -2,11 +2,13 @@ package com.cyf.ptwoserver.wx.controller;
 
 import com.cyf.ptwoserver.util.UtilHttp;
 import com.cyf.ptwoserver.wx.lib.main.sec.WXBizMsgCrypt;
+import com.cyf.ptwoserver.wx.mapper.auth_event_mapper;
 import com.cyf.ptwoserver.wx.mapper.authorization_info_mapper;
 import com.cyf.ptwoserver.wx.mapper.authorizer_info_mapper;
 import com.cyf.ptwoserver.wx.mapper.component_verify_ticket_mapper;
 import com.cyf.ptwoserver.wx.models.WxConfig;
 import com.cyf.ptwoserver.wx.models.main.auth;
+import com.cyf.ptwoserver.wx.models.main.auth_event;
 import com.cyf.ptwoserver.wx.models.main.authorization_info;
 import com.cyf.ptwoserver.wx.models.main.component_verify_ticket;
 import com.cyf.ptwoserver.wx.util.UtilMain;
@@ -46,10 +48,14 @@ public class MainCtrl {
     private component_verify_ticket_mapper component_verify_ticket_mapper;
 
     @Autowired
+    private auth_event_mapper auth_event_mapper;
+
+    @Autowired
     private authorization_info_mapper authorization_info_mapper;
 
     @Autowired
     private authorizer_info_mapper authorizer_info_mapper;
+
     @Autowired
     private UtilMain utilMain;
 
@@ -60,23 +66,42 @@ public class MainCtrl {
         String nonce = request.getParameter("nonce");
         String encrypt_type = request.getParameter("encrypt_type");
         String msg_signature = request.getParameter("msg_signature");
-        logger.info(String.format("component_verify_ticket推送，post参数：[timestamp=%s],[nonce=%s],[encrypt_type=%s],[msg_signature=%s]", timestamp, nonce, encrypt_type, msg_signature));
+        logger.info(String.format("event推送，post参数：[timestamp=%s],[nonce=%s],[encrypt_type=%s],[msg_signature=%s]", timestamp, nonce, encrypt_type, msg_signature));
         try {
             String before = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8.name());
-            logger.info(String.format("component_verify_ticket推送，解密前：\n%s", before));
+            logger.info(String.format("event推送，解密前：\n%s", before));
             WXBizMsgCrypt pc = new WXBizMsgCrypt(wxConfig.token, wxConfig.encodingAesKey, wxConfig.appId);
             String after = pc.decryptMsg(msg_signature, timestamp, nonce, before);
-            logger.info(String.format("component_verify_ticket推送，解密后：\n%s", after));
+            logger.info(String.format("event推送，解密后：\n%s", after));
             Document document = DocumentHelper.parseText(after);
             Element root = document.getRootElement();
             String appId = root.elementText("AppId");
-            long createTime = Long.parseLong(root.elementText("CreateTime"));
+            Date createTime = new Date(Long.parseLong(root.elementText("CreateTime")) * 1000);
             String infoType = root.elementText("InfoType");
-            String componentVerifyTicket = root.elementText("ComponentVerifyTicket");
-            component_verify_ticket cvt = new component_verify_ticket(appId, new Date(createTime * 1000), infoType, componentVerifyTicket);
-            cvt.systime = new Date();
-            int count = this.component_verify_ticket_mapper.insert(cvt);
-            logger.info(String.format("component_verify_ticket存储结果：%s", count));
+            int count = 0;
+            switch (infoType) {
+                case "component_verify_ticket":
+                    String componentVerifyTicket = root.elementText("ComponentVerifyTicket");
+                    component_verify_ticket cvt = new component_verify_ticket(appId, createTime, infoType, componentVerifyTicket);
+                    cvt.systime = new Date();
+                    count = this.component_verify_ticket_mapper.insert(cvt);
+                    logger.info(String.format("component_verify_ticket存储结果：%s", count));
+                    break;
+                case "unauthorized":
+                case "updateauthorized":
+                case "authorized":
+                    String authorizerAppid = root.elementText("AuthorizerAppid");
+                    String authorizationCode = root.elementText("AuthorizationCode");
+                    Date authorizationCodeExpiredTime = root.elementText("AuthorizationCodeExpiredTime") == null ? null : new Date(Long.parseLong(root.elementText("AuthorizationCodeExpiredTime")) * 1000);
+                    String preAuthCode = root.elementText("PreAuthCode");
+                    auth_event ae = new auth_event(appId, createTime, infoType, authorizerAppid, authorizationCode, authorizationCodeExpiredTime, preAuthCode);
+                    ae.systime = new Date();
+                    count = this.auth_event_mapper.insert(ae);
+                    logger.info(String.format("auth_event存储结果：%s", count));
+                    break;
+                default:
+                    break;
+            }
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -101,7 +126,7 @@ public class MainCtrl {
             auth.authorization_info.systime = new Date();
             int count = this.authorization_info_mapper.insert(auth.authorization_info);
             logger.info(String.format("authorization_info存储结果：%s", count));
-            auth auth2 = this.utilMain.get_auth(auth.authorization_info.authorizer_appid);
+            auth auth2 = this.utilMain.get_authorizer_info(auth.authorization_info.authorizer_appid);
             count = this.authorizer_info_mapper.insert(auth2.authorizer_info);
             logger.info(String.format("authorizer_info存储结果：%s", count));
             return "授权成功";

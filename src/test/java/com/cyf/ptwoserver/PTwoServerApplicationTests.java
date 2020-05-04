@@ -1,16 +1,11 @@
 package com.cyf.ptwoserver;
 
 import com.cyf.ptwoserver.wx.models.WxConfig;
-import com.cyf.ptwoserver.wx.models.main.component_verify_ticket;
+import com.cyf.ptwoserver.wx.models.main.auth;
 import com.cyf.ptwoserver.wx.util.UtilMain;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.Date;
 
 @SpringBootTest
 class PTwoServerApplicationTests {
@@ -26,7 +21,7 @@ class PTwoServerApplicationTests {
 
     @Test
     void contextLoads() {
-        String s = this.utilMain.get_authorizer_access_token("wx7d04f2e04d2c7dad");
+        auth s = this.utilMain.get_authorizer_info("wx170d15e9becda2ed");
         System.out.println(s);
 
     }
