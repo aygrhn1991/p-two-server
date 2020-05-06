@@ -2,10 +2,10 @@ package com.cyf.ptwoserver.wx.controller;
 
 import com.cyf.ptwoserver.util.UtilHttp;
 import com.cyf.ptwoserver.wx.lib.main.sec.WXBizMsgCrypt;
-import com.cyf.ptwoserver.wx.mapper.auth_event_mapper;
-import com.cyf.ptwoserver.wx.mapper.authorization_info_mapper;
-import com.cyf.ptwoserver.wx.mapper.authorizer_info_mapper;
-import com.cyf.ptwoserver.wx.mapper.component_verify_ticket_mapper;
+import com.cyf.ptwoserver.wx.mapper.main.auth_event_mapper;
+import com.cyf.ptwoserver.wx.mapper.main.authorization_info_mapper;
+import com.cyf.ptwoserver.wx.mapper.main.authorizer_info_mapper;
+import com.cyf.ptwoserver.wx.mapper.main.component_verify_ticket_mapper;
 import com.cyf.ptwoserver.wx.models.WxConfig;
 import com.cyf.ptwoserver.wx.models.main.auth;
 import com.cyf.ptwoserver.wx.models.main.auth_event;
@@ -68,7 +68,7 @@ public class MainCtrl {
         String msg_signature = request.getParameter("msg_signature");
         logger.info(String.format("event推送，post参数：[timestamp=%s],[nonce=%s],[encrypt_type=%s],[msg_signature=%s]", timestamp, nonce, encrypt_type, msg_signature));
         try {
-            String before = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8.name());
+            String before = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
             logger.info(String.format("event推送，解密前：\n%s", before));
             WXBizMsgCrypt pc = new WXBizMsgCrypt(wxConfig.token, wxConfig.encodingAesKey, wxConfig.appId);
             String after = pc.decryptMsg(msg_signature, timestamp, nonce, before);

@@ -1,4 +1,4 @@
-package com.cyf.ptwoserver.wx.mapper;
+package com.cyf.ptwoserver.wx.mapper.main;
 
 import com.cyf.ptwoserver.wx.models.main.component_access_token;
 import org.apache.ibatis.annotations.Insert;

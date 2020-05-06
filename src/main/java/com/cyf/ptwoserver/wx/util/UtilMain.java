@@ -1,8 +1,8 @@
 package com.cyf.ptwoserver.wx.util;
 
-import com.cyf.ptwoserver.wx.mapper.authorization_info_mapper;
-import com.cyf.ptwoserver.wx.mapper.component_access_token_mapper;
-import com.cyf.ptwoserver.wx.mapper.component_verify_ticket_mapper;
+import com.cyf.ptwoserver.wx.mapper.main.authorization_info_mapper;
+import com.cyf.ptwoserver.wx.mapper.main.component_access_token_mapper;
+import com.cyf.ptwoserver.wx.mapper.main.component_verify_ticket_mapper;
 import com.cyf.ptwoserver.wx.models.WxConfig;
 import com.cyf.ptwoserver.wx.models.main.*;
 import com.google.gson.Gson;

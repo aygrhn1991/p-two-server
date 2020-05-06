@@ -1,0 +1,40 @@
+package com.cyf.ptwoserver.wx.util;
+
+import com.cyf.ptwoserver.wx.models.WxConfig;
+import com.cyf.ptwoserver.wx.models.sub.user_info;
+import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import java.nio.charset.StandardCharsets;
+
+@Component
+public class UtilSub {
+
+    Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    WxConfig wxConfig;
+
+    @Autowired
+    private UtilMain utilMain;
+
+    public String get_auth_code_url(String appid, String redirect_uri, String scope, String state) {
+        return String.format("https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s&component_appid=%s#wechat_redirect", appid, redirect_uri, scope, state, this.wxConfig.appId);
+    }
+
+    public user_info get_user_info(String appid, String openid) {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+        String user_info_str = restTemplate.getForObject(String.format("https://api.weixin.qq.com/cgi-bin/user/info?access_token=%s&openid=%s&lang=zh_CN", this.utilMain.get_authorizer_access_token(appid), openid), String.class);
+        logger.info(String.format("user_info请求结果：%s", user_info_str));
+        user_info ui = new Gson().fromJson(user_info_str, user_info.class);
+        return ui;
+    }
+
+
+}

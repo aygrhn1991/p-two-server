@@ -1,8 +1,8 @@
 package com.cyf.ptwoserver.wx.models.main;
 
-import com.cyf.ptwoserver.wx.models.BaseModel;
+import com.cyf.ptwoserver.wx.models.WxBaseModel;
 
-public class authorizer_info extends BaseModel {
+public class authorizer_info extends WxBaseModel {
     public String authorizer_appid;
     public String nick_name;
     public String head_img;

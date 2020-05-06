@@ -7,10 +7,11 @@
     <script src="/js/jquery.js"></script>
 </head>
 <body>
-<button id="btn1">获取pc链接</button>
-<a id="url1" target="_blank">电脑页面点击</a>
+<!--<button id="btn1">获取pc链接</button>-->
+<!--<a id="url1" target="_blank">电脑页面点击</a>-->
 <br>
 <button id="btn2">获取mobile链接</button>
+<br>
 <a id="url2" target="_blank">手机微信点击</a>
 <script>
     $('#btn1').click(function () {
@@ -31,6 +32,7 @@
             contentType: 'application/json',//发送给服务器的格式
             dataType: 'json',//收到服务器数据的格式
             success: function (data) {
+                alert('链接获取成功');
                 $('#url2').attr('href', data.data);
             }
         });

@@ -1,16 +1,10 @@
 package com.cyf.ptwoserver.wx.models.main;
 
-import com.cyf.ptwoserver.wx.models.BaseModel;
+import com.cyf.ptwoserver.wx.models.WxBaseModel;
 
 import java.util.Date;
 
-public class auth_event extends BaseModel {
-    public auth_event(String appId, Date createTime, String infoType, String authorizerAppid) {
-        this.appId = appId;
-        this.createTime = createTime;
-        this.infoType = infoType;
-        this.authorizerAppid = authorizerAppid;
-    }
+public class auth_event extends WxBaseModel {
 
     public auth_event(String appId, Date createTime, String infoType, String authorizerAppid, String authorizationCode, Date authorizationCodeExpiredTime, String preAuthCode) {
         this.appId = appId;

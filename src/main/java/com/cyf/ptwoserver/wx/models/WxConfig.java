@@ -17,4 +17,8 @@ public class WxConfig {
 
     @Value("${wx.encodingAesKey}")
     public String encodingAesKey;
+
+    @Value("${wx.defaultAppId}")
+    public String defaultAppId;
+
 }
