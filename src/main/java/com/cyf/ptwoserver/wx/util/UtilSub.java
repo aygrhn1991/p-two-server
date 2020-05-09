@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class UtilSub {
@@ -34,6 +36,17 @@ public class UtilSub {
         logger.info(String.format("user_info请求结果：%s", user_info_str));
         user_info ui = new Gson().fromJson(user_info_str, user_info.class);
         return ui;
+    }
+
+    public void send_custom_service_message_text(String appid, String touser, String content) {
+        Map m = new HashMap();
+        m.put("content", content);
+        Map map = new HashMap();
+        map.put("touser", touser);
+        map.put("msgtype", "text");
+        map.put("text", m);
+        String result = new RestTemplate().postForObject(String.format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=%s", this.utilMain.get_authorizer_access_token(appid)), map, String.class);
+        logger.info(String.format("客服消息(text)发送结果：%s", result));
     }
 
 
