@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
@@ -26,8 +28,15 @@ class PTwoServerApplicationTests {
 
     @Test
     void contextLoads() {
-        this.utilSub.send_custom_service_message_text("wx0969469f30ac0f3f", "o9QXJ1UTi0Al6xMlKOY5qvIXPKwY", "hi!");
-        System.out.println("test.result----->");
+//        this.utilSub.send_custom_service_message_text("wx0969469f30ac0f3f", "o9QXJ1UTi0Al6xMlKOY5qvIXPKwY", "hi!");
+//        System.out.println("test.result----->");
+        List<String> l = new ArrayList<>();
+        try {
+            String s = l.get(3);
+        } catch (Exception e) {
+
+        }
+
 
     }
 

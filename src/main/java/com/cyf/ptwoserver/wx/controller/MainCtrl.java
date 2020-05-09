@@ -103,7 +103,7 @@ public class MainCtrl {
                     break;
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("error", e);
         }
         return "success";
     }

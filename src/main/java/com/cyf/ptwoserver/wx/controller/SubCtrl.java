@@ -86,12 +86,13 @@ public class SubCtrl {
             if (au == null) {
                 user_info ui = this.utilSub.get_user_info(appid, fromUserName);
                 app_user au2 = new app_user(appid, fromUserName, ui.unionid);
+                au2.systime = new Date();
                 this.app_mapper.insert_app_user(au2);
                 au = au2;
             }
             app_activity aa = this.app_mapper.select_app_activity(appid);
             if (aa == null) {
-                return null;
+                return "";
             }
             switch (msgType) {
                 case "event":
@@ -125,7 +126,7 @@ public class SubCtrl {
                     break;
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("error", e);
         }
         return "";
     }
@@ -136,7 +137,7 @@ public class SubCtrl {
         try {
             redirect_uri = URLEncoder.encode(UtilHttp.getBaseUrl(request) + "/sub/code/" + appid + "/" + activityid + "/" + unionid, "utf-8");
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("error", e);
         }
         return "redirect:" + this.utilSub.get_auth_code_url(this.wxConfig.defaultAppId, redirect_uri, scope.snsapi_userinfo.name(), "nothing");
     }
