@@ -98,21 +98,21 @@ public class SubCtrl {
                 case "event":
                     switch (event) {
                         case "subscribe":
-                            //助力加1
+                            //修改助力状态，助力加1
                             int count = this.activity_mapper.update_activity_user_member(subscribe.subscribe.ordinal(), appid, aa.activity_id, au.unionid);
                             //推送专属活动链接
                             this.utilSub.send_custom_service_message_text(appid, fromUserName, UtilHttp.getBaseUrl(request) + "/sub/auth/" + appid + "/" + aa.activity_id + "/" + au.unionid);
                             //当前助力人数
                             count = this.activity_mapper.count(appid, aa.activity_id, au.unionid, subscribe.subscribe.ordinal());
                             this.utilSub.send_custom_service_message_text(appid, fromUserName, String.format("当前助力人数：%s。【回复：助力 查看当前助力人数】", count));
-                            //推送助力消息
+                            //向organizer推送助力消息
                             activity_user au2 = this.activity_mapper.select_activity_user_member(appid, aa.activity_id, au.unionid);
                             app_user au3 = this.app_mapper.select_app_user_appid_unionid(appid, au2.organizer_unionid);
-                            auth_user_info aui = this.auth_user_info_mapper.select_union(au3.unionid);
+                            auth_user_info aui = this.auth_user_info_mapper.select_union(au.unionid);
                             this.utilSub.send_custom_service_message_text(appid, au3.openid, String.format("%s 为你助力", aui.nickname));
                             break;
                         case "unsubscribe":
-                            //助力减1
+                            //修改助力状态，助力减1
                             count = this.activity_mapper.update_activity_user_member(subscribe.cancelsubscribe.ordinal(), appid, aa.activity_id, au.unionid);
                         default:
                             break;
