@@ -121,6 +121,8 @@ public class SubCtrl {
                 case "text":
                     int count = this.activity_mapper.count(appid, aa.activity_id, au.unionid, subscribe.subscribe.ordinal());
                     this.utilSub.send_custom_service_message_text(appid, fromUserName, String.format("当前助力人数：%s。【回复：助力 查看当前助力人数】", count));
+                    this.utilSub.send_custom_service_message_image(appid, fromUserName, "nu7tENx2XvV1JzQe6YYrHNT-tTV7zAx_QujIDCBnurXS5utpH_D4FzyJWWkoqv1r");
+
                     break;
                 default:
                     break;

@@ -1,6 +1,7 @@
 package com.cyf.ptwoserver.wx.util;
 
 import com.cyf.ptwoserver.wx.models.WxConfig;
+import com.cyf.ptwoserver.wx.models.sub.source_type;
 import com.cyf.ptwoserver.wx.models.sub.user_info;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -49,5 +50,20 @@ public class UtilSub {
         logger.info(String.format("客服消息(text)发送结果：%s", result));
     }
 
+    public void send_custom_service_message_image(String appid, String touser, String mediaId) {
+        Map m = new HashMap();
+        m.put("media_id", mediaId);
+        Map map = new HashMap();
+        map.put("touser", touser);
+        map.put("msgtype", "image");
+        map.put("image", m);
+        String result = new RestTemplate().postForObject(String.format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=%s", this.utilMain.get_authorizer_access_token(appid)), map, String.class);
+        logger.info(String.format("客服消息(image)发送结果：%s", result));
+    }
+
+    public void upload_temp_source(String appid) {
+        String result = new RestTemplate().postForObject(String.format("https://api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s", this.utilMain.get_authorizer_access_token(appid)), source_type.image, String.class);
+        logger.info(String.format("临时素材(图片)上传结果：%s", result));
+    }
 
 }

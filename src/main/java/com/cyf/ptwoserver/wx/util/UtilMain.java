@@ -87,10 +87,12 @@ public class UtilMain {
             map.put("authorizer_refresh_token", ai.authorizer_refresh_token);
             authorization_info ai2 = new RestTemplate().postForObject(String.format("https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token=%s", this.get_component_access_token()), map, authorization_info.class);
             logger.info(String.format("authorizer_access_token刷新结果：%s", new Gson().toJson(ai2)));
-            ai2.authorizer_appid = authorizer_appid;
-            ai2.systime = new Date();
-            int count = this.authorization_info_mapper.update(ai2);
-            logger.info(String.format("authorizer_access_token存储结果：%s", count));
+            if (ai2.errcode == null) {
+                ai2.authorizer_appid = authorizer_appid;
+                ai2.systime = new Date();
+                int count = this.authorization_info_mapper.update(ai2);
+                logger.info(String.format("authorizer_access_token存储结果：%s", count));
+            }
             return ai2.authorizer_access_token;
         } else {
             return ai.authorizer_access_token;
